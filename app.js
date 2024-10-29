@@ -1,328 +1,164 @@
-// xxxxxxxxxx Working For Sign Up Form xxxxxxxxxx
-// xxxxxxxxxx Full Name Validation xxxxxxxxxx
+var firebaseConfig = {
+    apiKey: "AIzaSyCdTxcXKZduVB3m_YdHoxKYsXxPPppzWI4",
+    authDomain: "vyavahaar-mentalhealthcare.firebaseapp.com",
+    databaseURL: "https://vyavahaar-mentalhealthcare-default-rtdb.firebaseio.com",
+    projectId: "vyavahaar-mentalhealthcare",
+    storageBucket: "vyavahaar-mentalhealthcare.appspot.com",
+    messagingSenderId: "1088638899783",
+    appId: "1:1088638899783:web:0244785d45dea7132dc362",
+    measurementId: "G-1T7PTWPJCR"
+};
+//   // Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
-function checkUserFullName(){
-    var userSurname = document.getElementById("userFullName").value;
-    var flag = false;
-    if(userSurname === ""){
-        flag = true;
-    }
-    if(flag){
-        document.getElementById("userFullNameError").style.display = "block";
-    }else{
-        document.getElementById("userFullNameError").style.display = "none";
-    }
-}
-// xxxxxxxxxx User Surname Validation xxxxxxxxxx
-function checkUserSurname(){
-    var userSurname = document.getElementById("userSurname").value;
-    var flag = false;
-    if(userSurname === ""){
-        flag = true;
-    }
-    if(flag){
-        document.getElementById("userSurnameError").style.display = "block";
-    }else{
-        document.getElementById("userSurnameError").style.display = "none";
-    }
-}
-// xxxxxxxxxx Email Validation xxxxxxxxxx
-function checkUserEmail(){
-    var userEmail = document.getElementById("userEmail");
-    var userEmailFormate = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    var flag;
-    if(userEmail.value.match(userEmailFormate)){
-        flag = false;
-    }else{
-        flag = true;
-    }
-    if(flag){
-        document.getElementById("userEmailError").style.display = "block";
-    }else{
-        document.getElementById("userEmailError").style.display = "none";
-    }
-}
-// xxxxxxxxxx Password Validation xxxxxxxxxx
-function checkUserPassword(){
-    var userPassword = document.getElementById("userPassword");
-    var userPasswordFormate = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{10,}/;      
-    var flag;
-    if(userPassword.value.match(userPasswordFormate)){
-        flag = false;
-    }else{
-        flag = true;
-    }    
-    if(flag){
-        document.getElementById("userPasswordError").style.display = "block";
-    }else{
-        document.getElementById("userPasswordError").style.display = "none";
-    }
-}
-// xxxxxxxxxx Check user bio characters. It'll use later xxxxxxxxxx
-function checkUserBio(){
-    var userBio = document.getElementById("userBio").value;
-    var flag = false;
-    if(flag){
-        document.getElementById("userBioError").style.display = "block";
-    }else{
-        document.getElementById("userBioError").style.display = "none";
-    }
-}
-// xxxxxxxxxx Submitting and Creating new user in firebase authentication xxxxxxxxxx
-function signUp(){
-    var userFullName = document.getElementById("userFullName").value;
-    var userSurname = document.getElementById("userSurname").value;
-    var userEmail = document.getElementById("userEmail").value;
-    var userPassword = document.getElementById("userPassword").value;
-    var userFullNameFormate = /^([A-Za-z.\s_-])/;    
-    var userEmailFormate = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    var userPasswordFormate = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{10,}/;      
+var postRef = firebase.database().ref('posts');
 
-    var checkUserFullNameValid = userFullName.match(userFullNameFormate);
-    var checkUserEmailValid = userEmail.match(userEmailFormate);
-    var checkUserPasswordValid = userPassword.match(userPasswordFormate);
+// get post and display
+postRef.limitToLast(5).on('value', (snapshot) => {
+    var posts = snapshot.val();
+    var postsKey = Object.keys(posts);
 
-    if(checkUserFullNameValid == null){
-        return checkUserFullName();
-    }else if(userSurname === ""){
-        return checkUserSurname();
-    }else if(checkUserEmailValid == null){
-        return checkUserEmail();
-    }else if(checkUserPasswordValid == null){
-        return checkUserPassword();
-    }else{
-        firebase.auth().createUserWithEmailAndPassword(userEmail, userPassword).then((success) => {
-            var user = firebase.auth().currentUser;
-            var uid;
-            if (user != null) {
-                uid = user.uid;
-            }
-            var firebaseRef = firebase.database().ref();
-            var userData = {
-                userFullName: userFullName,
-                userSurname: userSurname,
-                userEmail: userEmail,
-                userPassword: userPassword,
-                userFb: "https://www.facebook.com/",
-                userTw: "https://twitter.com/",
-                userGp: "https://plus.google.com/",
-                userBio: "User biography",
-            }
-            firebaseRef.child(uid).set(userData);
-            document.location='/';
-              
-        }).catch((error) => {
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            alert(errorMessage)
-        });
+    //ensure only updated element are displayed
+    if (document.querySelector('#demo').innerHTML != "") {
+        document.querySelector('#demo').innerHTML = "";
     }
-}
-// xxxxxxxxxx Working For Sign In Form xxxxxxxxxx
-// xxxxxxxxxx Sign In Email Validation xxxxxxxxxx
-function checkUserSIEmail(){
-    var userSIEmail = document.getElementById("userSIEmail");
-    var userSIEmailFormate = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    var flag;
-    if(userSIEmail.value.match(userSIEmailFormate)){
-        flag = false;
-    }else{
-        flag = true;
-    }
-    if(flag){
-        document.getElementById("userSIEmailError").style.display = "block";
-    }else{
-        document.getElementById("userSIEmailError").style.display = "none";
-    }
-}
-// xxxxxxxxxx Sign In Password Validation xxxxxxxxxx
-function checkUserSIPassword(){
-    var userSIPassword = document.getElementById("userSIPassword");
-    var userSIPasswordFormate = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{10,}/;      
-    var flag;
-    if(userSIPassword.value.match(userSIPasswordFormate)){
-        flag = false;
-    }else{
-        flag = true;
-    }    
-    if(flag){
-        document.getElementById("userSIPasswordError").style.display = "block";
-    }else{
-        document.getElementById("userSIPasswordError").style.display = "none";
-    }
-}
-// xxxxxxxxxx Check email or password exsist in firebase authentication xxxxxxxxxx   
-var us = 0; 
-function signIn(){
-    var userSIEmail = document.getElementById("userSIEmail").value;
-    var userSIPassword = document.getElementById("userSIPassword").value;
-    var userSIEmailFormate = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    var userSIPasswordFormate = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{10,}/;      
+    for (var i = postsKey.length - 1; i >= 0; i--) {
+        var element = postsKey[i];
+        var description = posts[element].des;
 
-    var checkUserEmailValid = userSIEmail.match(userSIEmailFormate);
-    var checkUserPasswordValid = userSIPassword.match(userSIPasswordFormate);
-
-    if(checkUserEmailValid == null){
-        return checkUserSIEmail();
-    }else if(checkUserPasswordValid == null){
-        return checkUserSIPassword();
-    }else{
-        firebase.auth().signInWithEmailAndPassword(userSIEmail, userSIPassword).then((userCredential) => {
-            // Signed in
-            var user  = userCredential.user;
-            document.location='/';
-        }).catch((error) => {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-        });
+        var postId = element;
+        var commtId = "cmm" + element;
+        var formId = "frm" + element;
+        var date = posts[element].date;
+        var time = posts[element].time;
+        document.querySelector('#demo').innerHTML += `
+        <div class="post" >
+            <p class = "meta">Anonymous</p>
+            <p class = "meta">${date}</p>
+            <p class = "meta">${time}</p>
+            <p class="postcontent"onClick = "expand(this)">${description}</p>
+            <p style = "font-weight: bold;margin : 1rem 0;">Comments</p>
+            <div >
+                <div class="commentForm">
+                    
+                        <input class = "commentinp" type="text"  id = "${commtId}" name="comment" placeholder="Add a comment...">
+                        <button class = "sendbtn" id = "${postId}" onClick = "sendComment(this)">send</button>
+                </div>
+                
+                <div id= "${formId}"></div>
+            </div>
+            
+           
+        </div>
         
-    }
-}
-// xxxxxxxxxx Working For Profile Page xxxxxxxxxx
-// xxxxxxxxxx Get data from server and show in the page xxxxxxxxxx
+        `
 
-firebase.auth().onAuthStateChanged((user)=>{
-    if (user) {
-    //   User is signed in.
-        
-        let user = firebase.auth().currentUser;
-        let uid
-        if(user != null){
-            uid = user.uid;
+        if (posts[element].comments != null) {
+            var cmmnt = posts[element].comments;
+            var cmmntKey = Object.keys(cmmnt);
+            displayCmmnt(cmmntKey, formId, cmmnt);
         }
-        let firebaseRefKey = firebase.database().ref().child(uid);
-        firebaseRefKey.on('value', (dataSnapShot)=>{
-            document.getElementById("fullname").innerHTML = dataSnapShot.val().userFullName;
-            /*document.getElementById("userPfSurname").innerHTML = dataSnapShot.val().userSurname;
-            // userEmail = dataSnapShot.val().userEmail;
-            // userPassword = dataSnapShot.val().userPassword;
-            document.getElementById("userPfFb").setAttribute('href', dataSnapShot.val().userFb);
-            document.getElementById("userPfTw").setAttribute('href', dataSnapShot.val().userTw);
-            document.getElementById("userPfGp").setAttribute('href', dataSnapShot.val().userGp);
-            document.getElementById("userPfBio").innerHTML = dataSnapShot.val().userBio;*/
-        })
-    } else {
-    //   No user is signed in.
+
     }
+
+
 });
-// xxxxxxxxxx Show edit profile form with detail xxxxxxxxxx
-function showEditProfileForm(){
-    document.getElementById("profileSection").style.display = "none"
-    document.getElementById("editProfileForm").style.display = "block"
-    var userPfFullName = document.getElementById("userPfFullName").innerHTML;
-    var userPfSurname = document.getElementById("userPfSurname").innerHTML;
-    var userPfFb = document.getElementById("userPfFb").getAttribute("href");
-    var userPfTw = document.getElementById("userPfTw").getAttribute("href");
-    var userPfGp = document.getElementById("userPfGp").getAttribute("href");
-    var userPfBio = document.getElementById("userPfBio").innerHTML;
-    document.getElementById("userFullName").value = userPfFullName; 
-    document.getElementById("userSurname").value = userPfSurname; 
-    document.getElementById("userFacebook").value = userPfFb; 
-    document.getElementById("userTwitter").value = userPfTw; 
-    document.getElementById("userGooglePlus").value = userPfGp; 
-    document.getElementById("userBio").value = userPfBio; 
-}
-// xxxxxxxxxx Hide edit profile form xxxxxxxxxx
-function hideEditProfileForm(){
-    document.getElementById("profileSection").style.display = "block";
-    document.getElementById("editProfileForm").style.display = "none";
-}
-// xxxxxxxxxx Save profile and update database xxxxxxxxxx
-function saveProfile(){
-    let userFullName = document.getElementById("userFullName").value 
-    let userSurname = document.getElementById("userSurname").value 
-    let userFacebook = document.getElementById("userFacebook").value 
-    let userTwitter = document.getElementById("userTwitter").value 
-    let userGooglePlus = document.getElementById("userGooglePlus").value 
-    let userBio = document.getElementById("userBio").value
-    var userFullNameFormate = /^([A-Za-z.\s_-])/; 
-    var checkUserFullNameValid = userFullName.match(userFullNameFormate);
-    if(checkUserFullNameValid == null){
-        return checkUserFullName();
-    }else if(userSurname === ""){
-        return checkUserSurname();
-    }else{
-        let user = firebase.auth().currentUser;
-        let uid;
-        if(user != null){
-            uid = user.uid;
-        }
-        var firebaseRef = firebase.database().ref();
-        var userData = {
-            userFullName: userFullName,
-            userSurname: userSurname,
-            userFb: userFacebook,
-            userTw: userTwitter,
-            userGp: userGooglePlus,
-            userBio: userBio,
-        }
-        firebaseRef.child(uid).set(userData);
-        swal({
-            type: 'successfull',
-            title: 'Update successfull',
-            text: 'Profile updated.', 
-        }).then((value) => {
-            setTimeout(function(){
-                document.getElementById("profileSection").style.display = "block";
+// document.getElementById('thought').addEventListener('submit', onSubmit);
 
-                document.getElementById("editProfileForm").style.display = "none";
-            }, 1000)
-        });
+function sendComment(element) {
+    var postId = element.id;
+    var content = element.previousElementSibling.value;
+    var date = getDate();
+    firebase.database().ref('posts/' + postId + '/comments').push().set({
+        content: content,
+        date: date
+    });
+
+
+}
+
+// submit post
+
+function onSubmit(e) {
+    // e.preventDefault();
+    // console.log(e);
+    var vale = e.previousElementSibling.value;
+
+    console.log(vale);
+    // // console.log(vale);
+    var dats = getDate();
+    var time = getTime();
+    postRef.push().set({ des: vale, date: dats, time: time });
+    // // document.querySelector('#demo').innerHTML = "";
+    swal("Posted", "Hope that helped you", "success");
+    document.getElementById("myModal").style.display = "none";
+}
+
+// display comments
+function displayCmmnt(array, form, cmmt) {
+    var formId = "#" + form;
+    array.forEach(element => {
+        document.querySelector(formId).innerHTML += `
+            <div class = "comments">
+                <p class="meta cmtmeta">${cmmt[element].date}</p>
+                <p> ${cmmt[element].content}</p>
+            </div>
+        `
+    });
+}
+
+//utiltiy function
+function getDate() {
+    var date = new Date();
+
+    var dats = date.toLocaleString('en-US', {
+        weekday: 'short', // long, short, narrow
+        day: 'numeric', // numeric, 2-digit
+        year: 'numeric', // numeric, 2-digit
+        month: 'long', // numeric, 2-digit, long, short, narrow;
+    }).toString();
+    return dats;
+}
+
+function getTime() {
+    var date = new Date();
+    var time = date.toLocaleString('en-US', {
+        hour: 'numeric', // long, short, narrow
+        minute: 'numeric', // numeric, 2-digit
+        second: 'numeric', // numeric, 2-digit
+
+    }).toString();
+    return time;
+}
+
+function expand(elem) {
+
+    if (elem.nextElementSibling.style.display == "block") {
+        elem.nextElementSibling.style.display = "none";
+    } else {
+        elem.nextElementSibling.style.display = "block";
     }
+
+
+    // elem.childNodes[5].style.display = "block";
 }
 
-// xxxxxxxxxx Working For Sign Out xxxxxxxxxx
-function signOut(){
-    
-    firebase.auth().signOut().then(function() {
-        // Sign-out successful.
-        us = 0;
-        alert("successfully signed out");
-    }).catch(function(error) {
-        // An error happened.
-        let errorMessage = error.message;
-        alert(errorMessage);
-        swal({
-            type: 'error',
-            title: 'Error',
-            text: "error",
-        })
-    });
+// pop up
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("writebtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+    modal.style.display = "block";
 }
-function checksigninforques(){   
-    var user = firebase.auth().currentUser;
-        
-        if(!user){
-            
-            document.location='/questionnaire';
-            
-        }
-        else{
-            alert("Please Login!");
-            console.log("Please login first");
-        }
-   
-}
-function checksigninforphoto(){   
-    firebase.auth().onAuthStateChanged(function(user) {
-        if (!user) {
-            document.location='/photo';// User is signed in.
-        } else {
-          // No user is signed in.
-          alert("Please Login!");
-        }
-        });
-}
-function checksigninforcoun(){   
-    firebase.auth().onAuthStateChanged(function(user) {
-        window.user = user; // user is undefined if no user signed in
-        if(user){
-            alert("Please login first");
-            console.log("Please login first");
-        }
-        else{
-            document.location='/gethelp';
-        }
-    });
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
 }
